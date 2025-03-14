@@ -1,0 +1,102 @@
+# Check if GPU is available
+!nvidia-smi
+
+# Clone the repository
+!git clone https://github.com/wirapratamaz/stable-fast-3d
+%cd stable-fast-3d
+
+# Update setuptools and install wheel
+!pip install -U setuptools==69.5.1
+!pip install wheel
+
+# Install all requirements at once to avoid conflicts
+!pip install -r requirements.txt
+!pip install -r requirements-demo.txt
+!pip install huggingface_hub
+!pip install gradio==4.41.0
+!pip install gradio-litmodel3d==0.0.1
+!pip install pandas websockets>=13.0
+
+# Add this to force runtime restart after installations
+import IPython
+from google.colab import output
+
+# Display message about restarting the runtime
+print("\n\n-------------------------------------------")
+print("IMPORTANT: You need to restart the runtime now!")
+print("Click Runtime > Restart runtime, then run the next cell.")
+print("-------------------------------------------\n\n")
+
+# This will create a button to restart the runtime
+output.eval_js('(() => {' + 
+               'document.querySelector("#output-area").appendChild(document.createElement("div"))' +
+               '.innerHTML = \'<div class="alert alert-warning">Installing dependencies requires a runtime restart. ' + 
+               'Please click Runtime > Restart runtime and then continue with the next cell.</div>\';' +
+               '})()' )
+
+# ===== COPY EVERYTHING BELOW THIS LINE TO A NEW CELL AFTER RESTARTING THE RUNTIME =====
+
+# Authenticate with Hugging Face
+from huggingface_hub import login
+from getpass import getpass
+
+# Get token from user input (will be hidden)
+hf_token = getpass("Enter your Hugging Face token: ")
+login(token=hf_token)
+
+# Run inference on sample image
+!python run.py demo_files/examples/chair1.png --output-dir output/
+
+# Create uploads directory for your own images
+!mkdir -p uploads
+
+# Upload your own image
+from google.colab import files
+import os
+
+# Upload an image
+uploaded = files.upload()
+
+# Get the filename of the uploaded image
+if uploaded:
+    filename = list(uploaded.keys())[0]
+    filepath = os.path.join('uploads', filename)
+    
+    # Move the uploaded file to the uploads directory
+    !mv "{filename}" "{filepath}"
+    
+    print(f"Uploaded image saved to {filepath}")
+    
+    # Process the uploaded image
+    !python run.py "{filepath}" --output-dir output/
+else:
+    print("No file was uploaded.")
+
+# List the output files
+!ls -la output/
+
+# Download the generated GLB file
+from google.colab import files
+import glob
+
+# Find all GLB files in the output directory
+glb_files = glob.glob('output/*.glb')
+
+if glb_files:
+    for glb_file in glb_files:
+        files.download(glb_file)
+        print(f"Downloading {glb_file}")
+else:
+    print("No GLB files found in the output directory.")
+
+# Optional: Run with different parameters (uncomment if needed)
+# !python run.py demo_files/examples/chair1.png \
+#     --output-dir output/ \
+#     --texture-resolution 1024 \
+#     --remesh-option quad
+
+# ===== COPY EVERYTHING BELOW THIS LINE TO A NEW CELL IF YOU WANT TO RUN THE GRADIO DEMO =====
+
+# Run the Gradio demo
+print("Starting Gradio demo with public URL...")
+!python gradio_app.py --share
