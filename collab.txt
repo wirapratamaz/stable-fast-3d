@@ -38,11 +38,11 @@ output.eval_js('(() => {' +
 
 # Authenticate with Hugging Face
 from huggingface_hub import login
-from getpass import getpass
 
 # Get token from user input (will be hidden)
 hf_token = getpass("Enter your Hugging Face token: ")
 login(token=hf_token)
+print("Successfully logged in to Hugging Face with the provided token!")
 
 # Run inference on sample image
 !python run.py demo_files/examples/chair1.png --output-dir output/
@@ -97,10 +97,6 @@ else:
 
 # ===== COPY EVERYTHING BELOW THIS LINE TO A NEW CELL IF YOU WANT TO RUN THE GRADIO DEMO =====
 
-# Set up authentication (optional)
-username = "team"
-password = "sf3d2024"
-
 # Run the Gradio demo with public URL and authentication
 print("Starting Gradio demo with public URL...")
-!python gradio_app.py --share --listen --queuesize 5 --username {username} --password {password}
+!python gradio_app.py --share --listen --queuesize
