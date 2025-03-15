@@ -13,8 +13,8 @@
 !pip install -r requirements.txt
 !pip install -r requirements-demo.txt
 !pip install huggingface_hub
-!pip install gradio==4.41.0
-!pip install gradio-litmodel3d==0.0.1
+!pip install gradio
+!pip install gradio-litmodel3d
 !pip install pandas websockets>=13.0
 
 # Add this to force runtime restart after installations
