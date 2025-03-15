@@ -97,6 +97,10 @@ else:
 
 # ===== COPY EVERYTHING BELOW THIS LINE TO A NEW CELL IF YOU WANT TO RUN THE GRADIO DEMO =====
 
-# Run the Gradio demo
+# Set up authentication (optional)
+username = "team"
+password = "sf3d2024"
+
+# Run the Gradio demo with public URL and authentication
 print("Starting Gradio demo with public URL...")
-!python gradio_app.py --share
+!python gradio_app.py --share --listen --queuesize 5 --username {username} --password {password}
